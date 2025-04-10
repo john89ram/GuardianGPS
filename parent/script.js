@@ -1,4 +1,4 @@
-const PING_URL = "https://api.npoint.io/your-json-id"; // replace with your actual URL
+const PING_URL = "https://api.npoint.io/52e1cb70100d9bf4e140";
 
 async function sendPing() {
   const status = document.getElementById("status");
