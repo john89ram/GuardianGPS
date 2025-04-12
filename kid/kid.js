@@ -9,22 +9,28 @@ document.getElementById("sendLocation").addEventListener("click", () => {
       ? (altitude - terrainElevation).toFixed(2)
       : "Unavailable";
 
-    const message = `Latitude: ${latitude}
+    const message = `📍 Location Update:
+Latitude: ${latitude}
 Longitude: ${longitude}
-AGL: ${agl} meters`;
+Altitude Above Ground (AGL): ${agl} meters`;
 
     sendEmail(message);
     status.textContent = "Location sent!";
   }, (err) => {
-    status.textContent = "Error getting location.";
+    status.textContent = "Error getting location: " + err.message;
     console.error(err);
   }, { enableHighAccuracy: true });
 });
 
 async function getTerrainElevation(lat, lng) {
-  const res = await fetch(`https://maps.googleapis.com/maps/api/elevation/json?locations=${lat},${lng}&key=${GOOGLE_ELEVATION_API_KEY}`);
-  const data = await res.json();
-  return data.results?.[0]?.elevation || null;
+  try {
+    const res = await fetch(`https://maps.googleapis.com/maps/api/elevation/json?locations=${lat},${lng}&key=${GOOGLE_ELEVATION_API_KEY}`);
+    const data = await res.json();
+    return data.results?.[0]?.elevation || null;
+  } catch (error) {
+    console.error("Elevation fetch failed:", error);
+    return null;
+  }
 }
 
 function sendEmail(message) {
@@ -36,5 +42,6 @@ function sendEmail(message) {
     console.log("Email sent!");
   }).catch((err) => {
     console.error("Email send failed:", err);
+    document.getElementById("status").textContent = "Failed to send email.";
   });
 }
