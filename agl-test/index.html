@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GuardianGPS - AGL Test</title>
+  <link rel="icon" href="../assets/favicon.png" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .response-box {
+      margin-top: 2rem;
+      display: none;
+    }
+    .response-box input {
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      width: 80%;
+      max-width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>GuardianGPS - AGL Testing</h1>
+    <p>Click the button to estimate your current floor based on GPS.</p>
+    <button id="testAGL">Run AGL Test</button>
+    
+    <div id="results" style="margin-top: 1.5rem;"></div>
+
+    <div class="response-box" id="feedbackBox">
+      <p>Was the floor estimate correct?</p>
+      <button id="confirmYes">Yes</button>
+      <button id="confirmNo">No</button>
+      <div id="correctionForm" style="margin-top: 1rem; display: none;">
+        <label for="actualFloor">What floor are you on?</label><br/>
+        <input type="text" id="actualFloor" placeholder="e.g. Basement, Ground, 1st, 2nd, etc." />
+        <br/><br/>
+        <button id="sendCorrection">Send Correction</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script src="../kid/config.js"></script>
+  <script src="agl-test.js"></script>
+</body>
+</html>
