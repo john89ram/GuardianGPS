@@ -16,6 +16,7 @@
       height: 100vh;
       margin: 0;
     }
+
     .landing-container {
       text-align: center;
       background: white;
@@ -23,15 +24,18 @@
       border-radius: 1rem;
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
+
     .landing-container h1 {
       font-size: 2.5rem;
       margin-bottom: 1rem;
     }
+
     .landing-container p {
       font-size: 1.1rem;
       margin-bottom: 2rem;
     }
-    .landing-container a {
+
+    .landing-container a.portal-button {
       display: inline-block;
       margin: 0.5rem 1rem;
       padding: 0.75rem 2rem;
@@ -42,8 +46,35 @@
       border-radius: 0.5rem;
       transition: background 0.3s;
     }
-    .landing-container a:hover {
+
+    .landing-container a.portal-button:hover {
       background-color: #2563eb;
+    }
+
+    .agl-test-warning {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: repeating-linear-gradient(
+        45deg,
+        black,
+        black 10px,
+        yellow 10px,
+        yellow 20px
+      );
+      border: 2px solid black;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .agl-test-warning a {
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: white;
+      text-decoration: none;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 0.5rem 1.5rem;
+      border-radius: 4px;
+      display: inline-block;
     }
   </style>
 </head>
@@ -51,8 +82,13 @@
   <div class="landing-container">
     <h1>Welcome to GuardianGPS</h1>
     <p>Your lightweight family location link between safety and peace of mind.</p>
-    <a href="/kid/">Child Portal</a>
-    <a href="/parent/">Parent Portal</a>
+
+    <a href="/kid/" class="portal-button">Child Portal</a>
+    <a href="/parent/" class="portal-button">Parent Portal</a>
+
+    <div class="agl-test-warning">
+      <a href="/agl-test/">🚧 AGL Testing Zone 🚧</a>
+    </div>
   </div>
 </body>
 </html>
