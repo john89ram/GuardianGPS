@@ -71,7 +71,7 @@ Map: ${data.googleMapsLink}
     to_email: PARENT_EMAIL,
     message: message
   }).then(() => {
-    document.getElementById("feedbackBox").innerHTML = "<p>✅ Confirmation sent. Thank you!</p>";
+    window.location.href = "/thanks.html";
   }).catch((err) => {
     console.error("Email send failed:", err);
     alert("Something went wrong while sending the confirmation.");
@@ -105,7 +105,7 @@ Map: ${data.googleMapsLink}
     to_email: PARENT_EMAIL,
     message: correctionMsg
   }).then(() => {
-    document.getElementById("feedbackBox").innerHTML = "<p>✅ Correction sent. Thank you!</p>";
+    window.location.href = "/thanks.html";
   }).catch((err) => {
     console.error("Email send failed:", err);
     alert("Something went wrong while sending the correction.");
