@@ -101,6 +101,7 @@ Estimated Floor: ${data.floorEstimate}
 Map: ${data.googleMapsLink}
 `;
 
+  emailjs.init(EMAILJS_USER_ID);  // ✅ Ensure EmailJS is initialized
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
     to_email: PARENT_EMAIL,
     message: correctionMsg
