@@ -9,10 +9,15 @@ document.getElementById("sendLocation").addEventListener("click", () => {
       ? (altitude - terrainElevation).toFixed(2)
       : "Unavailable";
 
-    const message = `📍 Location Update:
-Latitude: ${latitude}
-Longitude: ${longitude}
-Altitude Above Ground (AGL): ${agl} meters`;
+      const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+      const message = `Hi Dad,
+      
+      📍 Location Update:
+      Latitude: ${latitude}
+      Longitude: ${longitude}
+      Altitude Above Ground (AGL): ${agl} meters
+      
+      🗺️ View on Map: ${googleMapsLink}`;        
 
     sendEmail(message);
     status.textContent = "Location sent!";
