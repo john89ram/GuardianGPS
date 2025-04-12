@@ -2,7 +2,7 @@ let map;
 let marker;
 
 document.getElementById("trackNow").addEventListener("click", () => {
-  // For now, simulate with mock data. Later: fetch from backend
+  // Mock location for now
   const mockLocation = {
     lat: 35.23245,
     lng: -106.64678,
