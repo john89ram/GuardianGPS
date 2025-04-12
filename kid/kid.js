@@ -47,25 +47,24 @@ Your favorite kid 😄`;
 });
 
 async function getTerrainElevation(lat, lng) {
-  const url = `https://maps.googleapis.com/maps/api/elevation/json?locations=${lat},${lng}&key=${GOOGLE_ELEVATION_API_KEY}`;
-  console.log("🔍 Fetching Elevation Data...");
-  console.log("🌐 Request URL:", url);
+  const url = `/.netlify/functions/getElevation?lat=${lat}&lng=${lng}`;
+  console.log("🔍 Calling Netlify Function:", url);
 
   try {
     const response = await fetch(url);
     const data = await response.json();
-    console.log("📦 Elevation API Response:", data);
+    console.log("📦 Elevation from Netlify Function:", data);
 
     if (data.status === "OK" && data.results && data.results.length > 0) {
       const elevation = data.results[0].elevation;
       console.log("✅ Elevation (meters above sea level):", elevation);
       return elevation;
     } else {
-      console.warn("⚠️ Elevation API returned unexpected data:", data.status);
+      console.warn("⚠️ Elevation API response not OK:", data.status);
       return null;
     }
   } catch (error) {
-    console.error("❌ Failed to fetch elevation data:", error);
+    console.error("❌ Error fetching elevation:", error);
     return null;
   }
 }
