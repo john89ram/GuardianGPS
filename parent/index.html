@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GuardianGPS - Parent Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>GuardianGPS</h1>
+    <p>Click to request your child's current location.</p>
+    <button id="trackNow">Track Now</button>
+
+    <div id="locationDetails" style="margin-top: 1.5rem;">
+      <p><strong>Latitude:</strong> <span id="lat">-</span></p>
+      <p><strong>Longitude:</strong> <span id="lng">-</span></p>
+      <p><strong>Altitude (AGL):</strong> <span id="agl">-</span> m</p>
+      <p><strong>Timestamp:</strong> <span id="timestamp">-</span></p>
+    </div>
+
+    <div id="map" style="height: 300px; margin-top: 2rem;"></div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="parent.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVuxDfESQFawetEJdkaae36dZcrDEle-w&callback=initMap" async defer></script>
+</body>
+</html>
