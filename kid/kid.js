@@ -4,39 +4,47 @@ document.getElementById("sendLocation").addEventListener("click", () => {
 
   navigator.geolocation.getCurrentPosition(async (position) => {
     const { latitude, longitude, altitude } = position.coords;
-    console.log("📍 Device Coordinates:", position.coords);
+    console.log("📍 Raw Coordinates:", {
+      latitude,
+      longitude,
+      altitude: altitude ?? "null",
+      accuracy: position.coords.accuracy,
+      altitudeAccuracy: position.coords.altitudeAccuracy
+    });
 
     const terrainElevation = await getTerrainElevation(latitude, longitude);
     const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
-    let message;
 
-    if (altitude && terrainElevation !== null) {
-      const agl = (altitude - terrainElevation).toFixed(2);
-      message = `Hi Dad,
+    const lat = latitude.toFixed(6);
+    const lng = longitude.toFixed(6);
+    const alt = altitude ? altitude.toFixed(1) : null;
+    const elev = terrainElevation !== null ? terrainElevation.toFixed(1) : null;
 
-📍 Location Update:
-Latitude: ${latitude}
-Longitude: ${longitude}
-Altitude Above Ground (AGL): ${agl} meters
+    let agl = null;
+    let aglMessage = "";
 
-🗺️ View on Map: ${googleMapsLink}
-
-Love,
-Your favorite kid 😄`;
-    } else {
-      message = `Hi Dad,
-
-📍 Location Update:
-Latitude: ${latitude}
-Longitude: ${longitude}
-Device-reported Altitude: ${altitude ?? "Not available"}
-Ground Elevation: ${terrainElevation ?? "Not available"}
-
-🗺️ View on Map: ${googleMapsLink}
-
-Love,
-Your favorite kid 😄`;
+    if (alt && elev) {
+      agl = (alt - elev).toFixed(1);
+      aglMessage = `AGL (above ground): ${agl} meters${agl < 0 ? " (below ground level or GPS variance)" : ""}`;
     }
+
+    // Construct full message
+    let message = `Hi Dad,
+
+📍 Location Update:
+Latitude: ${lat}
+Longitude: ${lng}`;
+
+    if (alt) message += `\nDevice Altitude: ${alt} meters`;
+    if (elev) message += `\nGround Elevation: ${elev} meters`;
+    if (agl !== null) message += `\n${aglMessage}`;
+
+    message += `
+
+🗺️ View on Map: ${googleMapsLink}
+
+Love,
+Your favorite kid 😄`;
 
     sendEmail(message);
     status.textContent = "Location sent!";
