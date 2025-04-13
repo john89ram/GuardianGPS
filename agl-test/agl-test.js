@@ -40,14 +40,13 @@ Estimated Floor: ${floorEstimate}
 
 function estimateFloorFromAGL(agl) {
   agl = parseFloat(agl);
-  if (agl < -3) return "Underground";
-  if (agl < 2) return "Ground Floor";
-  if (agl < 5) return "1st Floor";
+  if (agl < -10) return "Underground";
+  if (agl < 3) return "Ground Floor";
+  if (agl < 6) return "1st Floor";
   if (agl < 9) return "2nd Floor";
   if (agl < 13) return "3rd Floor";
   if (agl < 20) return "4th–5th Floor";
-  if (agl >= 20) return "High Floor / Rooftop";
-  return "Unknown";
+  return "High Floor / Rooftop";
 }
 
 document.getElementById("confirmYes").addEventListener("click", () => {
@@ -101,7 +100,7 @@ Estimated Floor: ${data.floorEstimate}
 Map: ${data.googleMapsLink}
 `;
 
-  emailjs.init(EMAILJS_USER_ID);  // ✅ Ensure EmailJS is initialized
+  emailjs.init(EMAILJS_USER_ID);
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
     to_email: PARENT_EMAIL,
     message: correctionMsg
