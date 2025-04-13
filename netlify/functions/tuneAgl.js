@@ -4,16 +4,22 @@ let initialized = false;
 
 exports.handler = async () => {
   try {
+    console.log("🔐 Reading service account key...");
+    const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_KEY);
+    console.log("✅ Parsed service account key");
+
     if (!initialized) {
-      const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_KEY);
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
       });
       initialized = true;
+      console.log("🔥 Firebase Admin initialized");
     }
 
     const db = admin.firestore();
     const snapshot = await db.collection("aglLogs").get();
+    console.log(`📦 Retrieved ${snapshot.size} documents from 'aglLogs'`);
+
     const floorGroups = {};
 
     snapshot.forEach(doc => {
@@ -62,11 +68,14 @@ exports.handler = async () => {
       });
     }
 
+    console.log("✅ Thresholds computed successfully");
+
     return {
       statusCode: 200,
       body: JSON.stringify({ thresholds, ranges })
     };
   } catch (err) {
+    console.error("❌ Function error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
