@@ -12,7 +12,7 @@
     <h1>GuardianGPS - AGL Testing</h1>
     <p>Click the button to estimate your current floor based on GPS.</p>
     <button id="testAGL">Run AGL Test</button>
-    
+
     <div id="results" style="margin-top: 1.5rem;"></div>
 
     <div class="response-box" id="feedbackBox" style="display:none;">
@@ -21,7 +21,7 @@
       <button id="confirmNo">No</button>
       <div id="correctionForm" style="margin-top: 1rem; display: none;">
         <label for="actualFloor">What floor are you on?</label><br/>
-        <input type="text" id="actualFloor" placeholder="e.g. Basement, Ground, 1st, 2nd" />
+        <input type="text" id="actualFloor" placeholder="e.g. Ground, 1st, 3rd, Basement" />
         <br/><br/>
         <button id="sendCorrection">Send Correction</button>
       </div>
@@ -31,27 +31,29 @@
   <!-- EmailJS -->
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
-  <!-- Firebase (Modular) -->
+  <!-- Firebase (modular CDN) via secure Netlify Function -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCRMzmmJ9oB88p_meJBK-bPVpvXNO3utQY",
-      authDomain: "guardiangps-6dd09.firebaseapp.com",
-      projectId: "guardiangps-6dd09",
-      storageBucket: "guardiangps-6dd09.firebasestorage.app",
-      messagingSenderId: "869285753682",
-      appId: "1:869285753682:web:6a86c43d3b0c3f1f7c808b"
-    };
+    async function initFirebase() {
+      try {
+        const res = await fetch("/.netlify/functions/getFirebaseConfig");
+        const config = await res.json();
+        const app = initializeApp(config);
+        const db = getFirestore(app);
+        window._guardianFirestore = db;
+        window._firestoreHelpers = { collection, addDoc, serverTimestamp };
+        console.log("✅ Firebase initialized via secure config.");
+      } catch (err) {
+        console.error("❌ Firebase init failed:", err);
+      }
+    }
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window._guardianFirestore = db; // Make it accessible from agl-test.js
-    window._firestoreHelpers = { collection, addDoc, serverTimestamp };
+    initFirebase();
   </script>
 
+  <!-- Load config + script -->
   <script src="../kid/config.js"></script>
   <script src="agl-test.js"></script>
 </body>
