@@ -6,18 +6,6 @@
   <title>GuardianGPS - AGL Test</title>
   <link rel="icon" href="../assets/favicon.png" />
   <link rel="stylesheet" href="../styles.css" />
-  <style>
-    .response-box {
-      margin-top: 2rem;
-      display: none;
-    }
-    .response-box input {
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-      width: 80%;
-      max-width: 300px;
-    }
-  </style>
 </head>
 <body>
   <div class="container">
@@ -27,20 +15,43 @@
     
     <div id="results" style="margin-top: 1.5rem;"></div>
 
-    <div class="response-box" id="feedbackBox">
+    <div class="response-box" id="feedbackBox" style="display:none;">
       <p>Was the floor estimate correct?</p>
       <button id="confirmYes">Yes</button>
       <button id="confirmNo">No</button>
       <div id="correctionForm" style="margin-top: 1rem; display: none;">
         <label for="actualFloor">What floor are you on?</label><br/>
-        <input type="text" id="actualFloor" placeholder="e.g. Basement, Ground, 1st, 2nd, etc." />
+        <input type="text" id="actualFloor" placeholder="e.g. Basement, Ground, 1st, 2nd" />
         <br/><br/>
         <button id="sendCorrection">Send Correction</button>
       </div>
     </div>
   </div>
 
+  <!-- EmailJS -->
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+  <!-- Firebase (Modular) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCRMzmmJ9oB88p_meJBK-bPVpvXNO3utQY",
+      authDomain: "guardiangps-6dd09.firebaseapp.com",
+      projectId: "guardiangps-6dd09",
+      storageBucket: "guardiangps-6dd09.firebasestorage.app",
+      messagingSenderId: "869285753682",
+      appId: "1:869285753682:web:6a86c43d3b0c3f1f7c808b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window._guardianFirestore = db; // Make it accessible from agl-test.js
+    window._firestoreHelpers = { collection, addDoc, serverTimestamp };
+  </script>
+
   <script src="../kid/config.js"></script>
   <script src="agl-test.js"></script>
 </body>

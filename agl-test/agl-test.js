@@ -31,7 +31,6 @@ Estimated Floor: ${floorEstimate}
     document.getElementById("results").innerHTML = resultMsg;
     document.getElementById("feedbackBox").style.display = "block";
 
-    // Save for correction email later
     window._aglTestData = { lat, lng, alt, elev, agl, floorEstimate, googleMapsLink };
   }, (err) => {
     document.getElementById("results").textContent = "Error getting location: " + err.message;
@@ -49,8 +48,24 @@ function estimateFloorFromAGL(agl) {
   return "High Floor / Rooftop";
 }
 
-document.getElementById("confirmYes").addEventListener("click", () => {
+document.getElementById("confirmYes").addEventListener("click", async () => {
   const data = window._aglTestData || {};
+  const db = window._guardianFirestore;
+  const { addDoc, collection, serverTimestamp } = window._firestoreHelpers;
+
+  const payload = {
+    latitude: data.lat,
+    longitude: data.lng,
+    deviceAltitude: data.alt,
+    groundElevation: data.elev,
+    agl: data.agl,
+    estimatedFloor: data.floorEstimate,
+    confirmed: true,
+    timestamp: serverTimestamp()
+  };
+
+  await addDoc(collection(db, "aglLogs"), payload);
+
   const message = `📍 AGL Confirmation Submission:
 
 Latitude: ${data.lat}
@@ -71,9 +86,6 @@ Map: ${data.googleMapsLink}
     message: message
   }).then(() => {
     window.location.href = "/thanks.html";
-  }).catch((err) => {
-    console.error("Email send failed:", err);
-    alert("Something went wrong while sending the confirmation.");
   });
 });
 
@@ -81,11 +93,28 @@ document.getElementById("confirmNo").addEventListener("click", () => {
   document.getElementById("correctionForm").style.display = "block";
 });
 
-document.getElementById("sendCorrection").addEventListener("click", () => {
+document.getElementById("sendCorrection").addEventListener("click", async () => {
   const actualFloor = document.getElementById("actualFloor").value.trim();
   if (!actualFloor) return alert("Please enter your actual floor.");
 
   const data = window._aglTestData || {};
+  const db = window._guardianFirestore;
+  const { addDoc, collection, serverTimestamp } = window._firestoreHelpers;
+
+  const payload = {
+    latitude: data.lat,
+    longitude: data.lng,
+    deviceAltitude: data.alt,
+    groundElevation: data.elev,
+    agl: data.agl,
+    estimatedFloor: data.floorEstimate,
+    actualFloor: actualFloor,
+    confirmed: false,
+    timestamp: serverTimestamp()
+  };
+
+  await addDoc(collection(db, "aglLogs"), payload);
+
   const correctionMsg = `📍 AGL Correction Submission:
 
 Latitude: ${data.lat}
@@ -106,9 +135,6 @@ Map: ${data.googleMapsLink}
     message: correctionMsg
   }).then(() => {
     window.location.href = "/thanks.html";
-  }).catch((err) => {
-    console.error("Email send failed:", err);
-    alert("Something went wrong while sending the correction.");
   });
 });
 
