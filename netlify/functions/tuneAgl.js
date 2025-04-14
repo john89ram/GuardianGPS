@@ -68,11 +68,23 @@ exports.handler = async () => {
       });
     }
 
-    console.log("✅ Thresholds computed successfully");
+    console.log("📥 Writing thresholds to Firestore...");
+
+    await db.collection("config").doc("floorThresholds").set({
+      updated: admin.firestore.FieldValue.serverTimestamp(),
+      thresholds,
+      ranges
+    });
+
+    console.log("✅ Saved thresholds to Firestore");
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ thresholds, ranges })
+      body: JSON.stringify({
+        message: "Thresholds computed and saved to Firestore",
+        thresholds,
+        ranges
+      })
     };
   } catch (err) {
     console.error("❌ Function error:", err);

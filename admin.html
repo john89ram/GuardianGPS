@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GuardianGPS Admin</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f9f9f9; }
+    h1 { margin-bottom: 1rem; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 3rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    th { background: #444; color: white; }
+    td { background: white; }
+    .card { background: #fff; padding: 1rem; margin-bottom: 1rem; border-radius: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+  </style>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getFirestore, collection, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = JSON.parse(import.meta.env.FIREBASE_CONFIG);
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      const thresholdsSnap = await getDoc(doc(db, "config", "floorThresholds"));
+      const thresholdsData = thresholdsSnap.exists() ? thresholdsSnap.data() : null;
+
+      if (thresholdsData) {
+        renderThresholds(thresholdsData.thresholds);
+      }
+
+      const logsSnap = await getDocs(collection(db, "aglLogs"));
+      renderLogs(logsSnap.docs.map(doc => doc.data()));
+    });
+
+    function renderThresholds(thresholds) {
+      const table = document.getElementById("thresholdTable");
+      thresholds.forEach(({ floor, range }) => {
+        const row = table.insertRow();
+        row.innerHTML = `<td>${floor}</td><td>${range[0]} → ${range[1]} m</td>`;
+      });
+    }
+
+    function renderLogs(logs) {
+      const table = document.getElementById("logTable");
+      logs.forEach(log => {
+        const row = table.insertRow();
+        row.innerHTML = `
+          <td>${log.latitude?.toFixed(5) ?? 'N/A'}</td>
+          <td>${log.longitude?.toFixed(5) ?? 'N/A'}</td>
+          <td>${log.agl ?? 'N/A'} m</td>
+          <td>${log.estimatedFloor || log.actualFloor || 'Unknown'}</td>
+          <td>${log.confirmed ? "✅" : "✏️"}</td>
+          <td>${new Date(log.timestamp?.seconds * 1000).toLocaleString() || 'N/A'}</td>
+        `;
+      });
+    }
+  </script>
+</head>
+<body>
+  <h1>📊 GuardianGPS Admin Panel</h1>
+
+  <div class="card">
+    <h2>Current Floor Thresholds</h2>
+    <table>
+      <thead>
+        <tr><th>Floor</th><th>AGL Range</th></tr>
+      </thead>
+      <tbody id="thresholdTable"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Recent AGL Test Logs</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Latitude</th><th>Longitude</th><th>AGL</th>
+          <th>Floor (Est/Reported)</th><th>Confirmed</th><th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody id="logTable"></tbody>
+    </table>
+  </div>
+</body>
+</html>
