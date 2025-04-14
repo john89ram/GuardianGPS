@@ -8,8 +8,6 @@
 
 **GuardianGPS** is a group-based location tracking app designed to help people stay connected in custom “packs” or private tracking groups. Each user can join or create a group and track the real-time location of members within that group — including altitude and estimated floor detection.
 
-**GuardianGPS** is a group-based location tracking app designed to help people stay connected in custom “packs” or private tracking groups. Each user can join or create a group and track the real-time location of members within that group — including altitude and estimated floor detection.
-
 ---
 
 ## 📁 Project Structure
@@ -127,7 +125,3 @@ FIREBASE_ADMIN_KEY={...full_firebase_admin_json...}
 
 Built by **Jonathan Ramirez**  
 Infrastructure Engineer, full-stack tinkerer, and explorer of altitude-based logic 👣🌍
-
----
-
-> Let me know if you'd like to add shields, badges, or deploy buttons!
