@@ -153,5 +153,5 @@ ${confirmed ? "✅ User confirmed floor estimate." : `❌ User reported actual f
 }
 
 function redirectAfterSubmit() {
-  window.location.href = "/thankyou.html";
+  window.location.href = "agl-test/thankyou.html";
 }
