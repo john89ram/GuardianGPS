@@ -6,21 +6,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../styles.css" />
   <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #f4f4f4; }
-    button { padding: 10px 20px; margin-top: 1rem; }
-    #feedback { margin-top: 2rem; display: none; }
-    label { display: block; margin: 1rem 0 0.5rem; }
-  </style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f4f4f4;
+    }
 
+    .agl-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .agl-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #feedback {
+      margin-top: 2rem;
+      display: none;
+    }
+
+    label {
+      display: block;
+      margin: 1rem 0 0.5rem;
+    }
+
+    .agl-output {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      max-width: 450px;
+    }
+
+    #yesBtn,
+    #noBtn {
+      margin-right: 10px;
+    }
+
+    a {
+      text-decoration: none;
+      color: #00a;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <h1>GuardianGPS - AGL Testing</h1>
-  <p>Click the button to estimate your current floor based on GPS.</p>
+  <div class="agl-header">
+    <h1>GuardianGPS - AGL Testing</h1>
+    <p>Click the button to estimate your current floor based on GPS.</p>
+  </div>
 
-  <button id="runTest">Run AGL Test</button>
-  <p id="status"></p>
+  <div class="agl-controls">
+    <button id="runTest">Run AGL Test</button>
+    <p id="status"></p>
+  </div>
 
-  <div id="output" style="margin-top: 2rem;"></div>
+  <div id="output" class="agl-output"></div>
 
   <div id="feedback">
     <h3>Was the floor estimate correct?</h3>
@@ -34,7 +86,7 @@
     </div>
   </div>
 
-  <!-- ✅ Use module loader -->
+  <!-- ✅ Load main module -->
   <script type="module" src="./agl-test.js"></script>
 </body>
 </html>
