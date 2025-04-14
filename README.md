@@ -121,5 +121,3 @@ Built by **Jonathan Ramirez**
 Infrastructure Engineer, full-stack tinkerer, and explorer of altitude-based logic 👣🌍
 
 ---
-
-> Let me know if you'd like to add shields, badges, or deploy buttons!
