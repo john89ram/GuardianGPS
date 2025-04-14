@@ -1,9 +1,9 @@
 # 🛰️ GuardianGPS
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/e750ad43-c2c6-4bae-9382-98e5b7b2c7a4/deploy-status)](https://app.netlify.com/sites/guardiangps/deploys)
-![License](https://img.shields.io/github/license/john89ram/GuardianGPS)
-![Last Commit](https://img.shields.io/github/last-commit/john89ram/GuardianGPS)
-![Languages](https://img.shields.io/github/languages/top/john89ram/GuardianGPS)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
+![Last Commit](https://img.shields.io/badge/last%20commit-private-lightgrey)
+![Languages](https://img.shields.io/badge/language-JavaScript-lightgrey)
 ![Stars](https://img.shields.io/github/stars/john89ram/GuardianGPS?style=social)
 
 
