@@ -1,143 +1,62 @@
-// Load Firebase Config (assumes script loads FIREBASE_CONFIG from env)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GuardianGPS - AGL Testing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f4f4f4; }
+    button { padding: 10px 20px; margin-top: 1rem; }
+    #feedback { margin-top: 2rem; display: none; }
+    label { display: block; margin: 1rem 0 0.5rem; }
+  </style>
 
-// Initialize Firebase
-const firebaseConfig = JSON.parse(import.meta.env.FIREBASE_CONFIG);
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  <!-- EmailJS -->
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <script>
+    emailjs.init("XZpDjjUIyCedr-e4n");
+  </script>
 
-// Init EmailJS
-emailjs.init("XZpDjjUIyCedr-e4n");
+  <!-- Firebase (INLINE CONFIG for dev) -->
+  <script type="module">
+    // Initialize Firebase app before JS loads
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 
-let coords = {};
-let aglData = {};
+    const firebaseConfig = {
+      apiKey: "AIzaSyCRMzmmJ9oB88p_meJBK-bPVpvXNO3utQY",
+      authDomain: "guardiangps-6dd09.firebaseapp.com",
+      projectId: "guardiangps-6dd09",
+      storageBucket: "guardiangps-6dd09.appspot.com",
+      messagingSenderId: "869285753682",
+      appId: "1:869285753682:web:6a86c43d3b0c3f1f7c808b"
+    };
 
-document.getElementById("runTest").addEventListener("click", async () => {
-  document.getElementById("status").textContent = "Running AGL Test...";
+    initializeApp(firebaseConfig);
+  </script>
+</head>
+<body>
+  <h1>GuardianGPS - AGL Testing</h1>
+  <p>Click the button to estimate your current floor based on GPS.</p>
 
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    const { latitude, longitude, altitude } = pos.coords;
-    coords = { latitude, longitude, altitude };
+  <button id="runTest">Run AGL Test</button>
+  <p id="status"></p>
 
-    // Get elevation via Netlify function
-    const url = `/.netlify/functions/getElevation?lat=${latitude}&lng=${longitude}`;
-    console.log("📡 Fetching elevation:", url);
+  <div id="output" style="margin-top: 2rem;"></div>
 
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
+  <div id="feedback">
+    <h3>Was the floor estimate correct?</h3>
+    <button id="yesBtn">✅ Yes</button>
+    <button id="noBtn" onclick="document.getElementById('correctionForm').style.display = 'block'">❌ No</button>
 
-      const ground = data.results?.[0]?.elevation;
-      const agl = altitude !== null ? (altitude - ground).toFixed(2) : null;
+    <div id="correctionForm" style="display: none; margin-top: 1rem;">
+      <label for="floorInput">What floor are you on?</label>
+      <input type="text" id="floorInput" placeholder="e.g., Ground, 3rd, 15th" />
+      <button id="sendCorrection">Send Correction</button>
+    </div>
+  </div>
 
-      aglData = {
-        altitude: altitude ?? "Unavailable",
-        ground: ground ?? "Unavailable",
-        agl,
-        estimatedFloor: getFloorFromAGL(agl)
-      };
-
-      renderResults();
-    } catch (err) {
-      console.error("❌ Failed to get elevation", err);
-      document.getElementById("status").textContent = "Error fetching elevation.";
-    }
-  });
-});
-
-function getFloorFromAGL(agl) {
-  if (agl == null || isNaN(agl)) return "Unknown";
-  const val = parseFloat(agl);
-  if (val < -3) return "Underground";
-  if (val < 2) return "Ground";
-  if (val < 6) return "1st Floor";
-  if (val < 10) return "2nd Floor";
-  if (val < 15) return "3rd Floor";
-  if (val < 30) return "4th-10th Floor";
-  return "High Rise";
-}
-
-function renderResults() {
-  const out = document.getElementById("output");
-  out.innerHTML = `
-    Latitude: ${coords.latitude?.toFixed(6)}<br>
-    Longitude: ${coords.longitude?.toFixed(6)}<br>
-    Device Altitude: ${aglData.altitude} m<br>
-    Ground Elevation: ${aglData.ground} m<br>
-    AGL: ${aglData.agl ?? 'Unavailable'} m<br>
-    Estimated Floor: ${aglData.estimatedFloor}<br>
-    🗺️ <a href="https://www.google.com/maps?q=${coords.latitude},${coords.longitude}" target="_blank">View on Map</a>
-  `;
-  document.getElementById("feedback").style.display = "block";
-}
-
-document.getElementById("yesBtn").addEventListener("click", async () => {
-  await sendLogToFirebase(true);
-  await sendEmail(true);
-  redirectAfterSubmit();
-});
-
-document.getElementById("sendCorrection").addEventListener("click", async () => {
-  const floor = document.getElementById("floorInput").value.trim();
-  if (!floor) return alert("Please enter the correct floor.");
-
-  await sendLogToFirebase(false, floor);
-  await sendEmail(false, floor);
-  redirectAfterSubmit();
-});
-
-async function sendLogToFirebase(confirmed, floor = null) {
-  try {
-    const docRef = await addDoc(collection(db, "aglLogs"), {
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-      altitude: aglData.altitude,
-      ground: aglData.ground,
-      agl: aglData.agl,
-      estimatedFloor: aglData.estimatedFloor,
-      actualFloor: floor,
-      confirmed,
-      timestamp: serverTimestamp()
-    });
-    console.log("📝 Log saved:", docRef.id);
-  } catch (err) {
-    console.error("❌ Failed to write to Firestore", err);
-  }
-}
-
-async function sendEmail(confirmed, correctedFloor = null) {
-  const templateParams = {
-    to_email: "john89ram@gmail.com",
-    subject: "📍 AGL Correction Submission",
-    message: `
-📍 AGL Correction Submission:
-
-Latitude: ${coords.latitude}
-Longitude: ${coords.longitude}
-Device Altitude: ${aglData.altitude}
-Ground Elevation: ${aglData.ground}
-AGL: ${aglData.agl}
-
-Estimated Floor: ${aglData.estimatedFloor}
-${confirmed ? "✅ User confirmed floor estimate." : `❌ User reported actual floor: ${correctedFloor}`}
-`
-  };
-
-  try {
-    const response = await emailjs.send("service_017si3q", "template_j2j5ij8", templateParams);
-    console.log("📨 Email sent!", response.status, response.text);
-  } catch (err) {
-    console.error("❌ Email failed to send:", err);
-    alert("⚠️ Failed to send email: " + (err.text || err));
-  }
-}
-
-function redirectAfterSubmit() {
-  window.location.href = "/thankyou.html";
-}
+  <!-- Your logic script with type="module" -->
+  <script type="module" src="./agl-test.js"></script>
+</body>
+</html>
