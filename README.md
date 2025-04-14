@@ -1,10 +1,11 @@
 # 🛰️ GuardianGPS
 
-![Netlify](https://img.shields.io/netlify/67fac27a8f2d26000854e9b8?label=Netlify%20Build)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/e750ad43-c2c6-4bae-9382-98e5b7b2c7a4/deploy-status)](https://app.netlify.com/sites/guardiangps/deploys)
 ![License](https://img.shields.io/github/license/john89ram/GuardianGPS)
 ![Last Commit](https://img.shields.io/github/last-commit/john89ram/GuardianGPS)
 ![Languages](https://img.shields.io/github/languages/top/john89ram/GuardianGPS)
 ![Stars](https://img.shields.io/github/stars/john89ram/GuardianGPS?style=social)
+
 
 **GuardianGPS** is a group-based location tracking app designed to help people stay connected in custom “packs” or private tracking groups. Each user can join or create a group and track the real-time location of members within that group — including altitude and estimated floor detection.
 
