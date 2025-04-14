@@ -138,6 +138,8 @@ AGL: ${aglData.agl}
 
 Estimated Floor: ${aglData.estimatedFloor}
 ${confirmed ? "✅ User confirmed floor estimate." : `❌ User reported actual floor: ${correctedFloor}`}
+
+🗺️ View on Map: https://www.google.com/maps?q=${coords.latitude},${coords.longitude}
 `
   };
 
