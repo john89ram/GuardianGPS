@@ -59,6 +59,10 @@ document.getElementById("runTest").addEventListener("click", async () => {
   });
 });
 
+function isNumeric(value) {
+  return !isNaN(parseFloat(value)) && isFinite(value);
+}
+
 function getFloorFromAGL(agl) {
   if (agl == null || isNaN(agl)) return "Unknown";
   const val = parseFloat(agl);
@@ -76,9 +80,9 @@ function renderResults() {
   out.innerHTML = `
     Latitude: ${coords.latitude?.toFixed(6)}<br>
     Longitude: ${coords.longitude?.toFixed(6)}<br>
-    Device Altitude: ${aglData.altitude} m<br>
-    Ground Elevation: ${aglData.ground} m<br>
-    AGL: ${aglData.agl ?? 'Unavailable'} m<br>
+    Device Altitude: ${isNumeric(aglData.altitude) ? aglData.altitude + " m" : "Unavailable"}<br>
+    Ground Elevation: ${isNumeric(aglData.ground) ? aglData.ground + " m" : "Unavailable"}<br>
+    AGL: ${isNumeric(aglData.agl) ? aglData.agl + " m" : "Unavailable"}<br>
     Estimated Floor: ${aglData.estimatedFloor}<br>
     🗺️ <a href="https://www.google.com/maps?q=${coords.latitude},${coords.longitude}" target="_blank">View on Map</a>
   `;
