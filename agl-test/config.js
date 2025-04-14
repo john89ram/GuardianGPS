@@ -1,5 +1,9 @@
-// config.js for Kid Portal
-const EMAILJS_USER_ID = "XZpDjjUIyCedr-e4n";
-const EMAILJS_SERVICE_ID = "service_017si3q";
-const EMAILJS_TEMPLATE_ID = "template_j2j5ij8";
-const PARENT_EMAIL = "john89ram@gmail.com";
+export const firebaseConfig = {
+    apiKey: "AIzaSyCRMzmmJ9oB88p_meJBK-bPVpvXNO3utQY",
+    authDomain: "guardiangps-6dd09.firebaseapp.com",
+    projectId: "guardiangps-6dd09",
+    storageBucket: "guardiangps-6dd09.appspot.com",
+    messagingSenderId: "869285753682",
+    appId: "1:869285753682:web:6a86c43d3b0c3f1f7c808b"
+  };
+  

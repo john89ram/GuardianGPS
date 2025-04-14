@@ -2,59 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GuardianGPS - AGL Test</title>
-  <link rel="icon" href="../assets/favicon.png" />
+  <title>GuardianGPS - AGL Testing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../styles.css" />
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f4f4f4; }
+    button { padding: 10px 20px; margin-top: 1rem; }
+    #feedback { margin-top: 2rem; display: none; }
+    label { display: block; margin: 1rem 0 0.5rem; }
+  </style>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <script>
+    emailjs.init("XZpDjjUIyCedr-e4n");
+  </script>
 </head>
 <body>
-  <div class="container">
-    <h1>GuardianGPS - AGL Testing</h1>
-    <p>Click the button to estimate your current floor based on GPS.</p>
-    <button id="testAGL">Run AGL Test</button>
+  <h1>GuardianGPS - AGL Testing</h1>
+  <p>Click the button to estimate your current floor based on GPS.</p>
 
-    <div id="results" style="margin-top: 1.5rem;"></div>
+  <button id="runTest">Run AGL Test</button>
+  <p id="status"></p>
 
-    <div class="response-box" id="feedbackBox" style="display:none;">
-      <p>Was the floor estimate correct?</p>
-      <button id="confirmYes">Yes</button>
-      <button id="confirmNo">No</button>
-      <div id="correctionForm" style="margin-top: 1rem; display: none;">
-        <label for="actualFloor">What floor are you on?</label><br/>
-        <input type="text" id="actualFloor" placeholder="e.g. Ground, 1st, 3rd, Basement" />
-        <br/><br/>
-        <button id="sendCorrection">Send Correction</button>
-      </div>
+  <div id="output" style="margin-top: 2rem;"></div>
+
+  <div id="feedback">
+    <h3>Was the floor estimate correct?</h3>
+    <button id="yesBtn">✅ Yes</button>
+    <button id="noBtn" onclick="document.getElementById('correctionForm').style.display = 'block'">❌ No</button>
+
+    <div id="correctionForm" style="display: none; margin-top: 1rem;">
+      <label for="floorInput">What floor are you on?</label>
+      <input type="text" id="floorInput" placeholder="e.g., Ground, 3rd, 15th" />
+      <button id="sendCorrection">Send Correction</button>
     </div>
   </div>
 
-  <!-- EmailJS -->
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
-  <!-- Firebase (modular CDN) via secure Netlify Function -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-    async function initFirebase() {
-      try {
-        const res = await fetch("/.netlify/functions/getFirebaseConfig");
-        const config = await res.json();
-        const app = initializeApp(config);
-        const db = getFirestore(app);
-        window._guardianFirestore = db;
-        window._firestoreHelpers = { collection, addDoc, serverTimestamp };
-        console.log("✅ Firebase initialized via secure config.");
-      } catch (err) {
-        console.error("❌ Firebase init failed:", err);
-      }
-    }
-
-    initFirebase();
-  </script>
-
-  <!-- Load config + script -->
-  <script src="../kid/config.js"></script>
-  <script src="agl-test.js"></script>
+  <!-- ✅ Use module loader -->
+  <script type="module" src="./agl-test.js"></script>
 </body>
 </html>
