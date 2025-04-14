@@ -1,0 +1,30 @@
+[build]
+  publish = "."                         # Root directory for HTML/CSS/JS
+  functions = "netlify/functions"      # Path to your serverless functions folder
+
+[dev]
+  functions = "netlify/functions"
+  publish = "."
+
+[functions]
+  node_bundler = "esbuild"             # Use esbuild for smaller & faster deployments
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/group/create"
+  to = "/group/create.html"
+  status = 200
+
+[[redirects]]
+  from = "/track"
+  to = "/track/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin/index.html"
+  status = 200

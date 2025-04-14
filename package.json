@@ -1,8 +1,13 @@
 {
     "name": "guardiangps",
     "version": "1.0.0",
+    "type": "module",
     "dependencies": {
-        "firebase-admin": "^13.2.0",
-        "node-fetch": "^2.6.7"
+      "firebase-admin": "^13.2.0",
+      "node-fetch": "^2.6.7"
+    },
+    "scripts": {
+      "tune-agl": "node scripts/tuneAGLFloors.js"
     }
-}
+  }
+  
