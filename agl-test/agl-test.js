@@ -1,152 +1,143 @@
-document.getElementById("testAGL").addEventListener("click", () => {
-  document.getElementById("results").textContent = "Getting location...";
-  navigator.geolocation.getCurrentPosition(async (position) => {
-    const { latitude, longitude, altitude } = position.coords;
-    const terrainElevation = await getTerrainElevation(latitude, longitude);
+// Load Firebase Config (assumes script loads FIREBASE_CONFIG from env)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-    const alt = altitude ? altitude.toFixed(1) : null;
-    const elev = terrainElevation !== null ? terrainElevation.toFixed(1) : null;
-    let agl = null;
-    let floorEstimate = "Unknown";
+// Initialize Firebase
+const firebaseConfig = JSON.parse(import.meta.env.FIREBASE_CONFIG);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    if (alt && elev) {
-      agl = (alt - elev).toFixed(1);
-      floorEstimate = estimateFloorFromAGL(agl);
+// Init EmailJS
+emailjs.init("XZpDjjUIyCedr-e4n");
+
+let coords = {};
+let aglData = {};
+
+document.getElementById("runTest").addEventListener("click", async () => {
+  document.getElementById("status").textContent = "Running AGL Test...";
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const { latitude, longitude, altitude } = pos.coords;
+    coords = { latitude, longitude, altitude };
+
+    // Get elevation via Netlify function
+    const url = `/.netlify/functions/getElevation?lat=${latitude}&lng=${longitude}`;
+    console.log("📡 Fetching elevation:", url);
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const ground = data.results?.[0]?.elevation;
+      const agl = altitude !== null ? (altitude - ground).toFixed(2) : null;
+
+      aglData = {
+        altitude: altitude ?? "Unavailable",
+        ground: ground ?? "Unavailable",
+        agl,
+        estimatedFloor: getFloorFromAGL(agl)
+      };
+
+      renderResults();
+    } catch (err) {
+      console.error("❌ Failed to get elevation", err);
+      document.getElementById("status").textContent = "Error fetching elevation.";
     }
-
-    const lat = latitude.toFixed(6);
-    const lng = longitude.toFixed(6);
-    const googleMapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
-
-    const resultMsg = `
-Latitude: ${lat}
-Longitude: ${lng}
-Device Altitude: ${alt ?? "Unavailable"} m
-Ground Elevation: ${elev ?? "Unavailable"} m
-AGL: ${agl ?? "Unavailable"} m
-Estimated Floor: ${floorEstimate}
-🗺️ <a href="${googleMapsLink}" target="_blank">View on Map</a>
-    `;
-
-    document.getElementById("results").innerHTML = resultMsg;
-    document.getElementById("feedbackBox").style.display = "block";
-
-    window._aglTestData = { lat, lng, alt, elev, agl, floorEstimate, googleMapsLink };
-  }, (err) => {
-    document.getElementById("results").textContent = "Error getting location: " + err.message;
-  }, { enableHighAccuracy: true });
-});
-
-function estimateFloorFromAGL(agl) {
-  agl = parseFloat(agl);
-  if (agl < -10) return "Underground";
-  if (agl < 3) return "Ground Floor";
-  if (agl < 6) return "1st Floor";
-  if (agl < 9) return "2nd Floor";
-  if (agl < 13) return "3rd Floor";
-  if (agl < 20) return "4th–5th Floor";
-  return "High Floor / Rooftop";
-}
-
-document.getElementById("confirmYes").addEventListener("click", async () => {
-  const data = window._aglTestData || {};
-  const db = window._guardianFirestore;
-  const { addDoc, collection, serverTimestamp } = window._firestoreHelpers;
-
-  const payload = {
-    latitude: data.lat,
-    longitude: data.lng,
-    deviceAltitude: data.alt,
-    groundElevation: data.elev,
-    agl: data.agl,
-    estimatedFloor: data.floorEstimate,
-    confirmed: true,
-    timestamp: serverTimestamp()
-  };
-
-  await addDoc(collection(db, "aglLogs"), payload);
-
-  const message = `📍 AGL Confirmation Submission:
-
-Latitude: ${data.lat}
-Longitude: ${data.lng}
-Device Altitude: ${data.alt ?? "N/A"} m
-Ground Elevation: ${data.elev ?? "N/A"} m
-AGL: ${data.agl ?? "N/A"} m
-
-Estimated Floor: ${data.floorEstimate}
-✅ User confirmed this estimate is correct.
-
-Map: ${data.googleMapsLink}
-`;
-
-  emailjs.init(EMAILJS_USER_ID);
-  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    to_email: PARENT_EMAIL,
-    message: message
-  }).then(() => {
-    window.location.href = "/thanks.html";
   });
 });
 
-document.getElementById("confirmNo").addEventListener("click", () => {
-  document.getElementById("correctionForm").style.display = "block";
+function getFloorFromAGL(agl) {
+  if (agl == null || isNaN(agl)) return "Unknown";
+  const val = parseFloat(agl);
+  if (val < -3) return "Underground";
+  if (val < 2) return "Ground";
+  if (val < 6) return "1st Floor";
+  if (val < 10) return "2nd Floor";
+  if (val < 15) return "3rd Floor";
+  if (val < 30) return "4th-10th Floor";
+  return "High Rise";
+}
+
+function renderResults() {
+  const out = document.getElementById("output");
+  out.innerHTML = `
+    Latitude: ${coords.latitude?.toFixed(6)}<br>
+    Longitude: ${coords.longitude?.toFixed(6)}<br>
+    Device Altitude: ${aglData.altitude} m<br>
+    Ground Elevation: ${aglData.ground} m<br>
+    AGL: ${aglData.agl ?? 'Unavailable'} m<br>
+    Estimated Floor: ${aglData.estimatedFloor}<br>
+    🗺️ <a href="https://www.google.com/maps?q=${coords.latitude},${coords.longitude}" target="_blank">View on Map</a>
+  `;
+  document.getElementById("feedback").style.display = "block";
+}
+
+document.getElementById("yesBtn").addEventListener("click", async () => {
+  await sendLogToFirebase(true);
+  await sendEmail(true);
+  redirectAfterSubmit();
 });
 
 document.getElementById("sendCorrection").addEventListener("click", async () => {
-  const actualFloor = document.getElementById("actualFloor").value.trim();
-  if (!actualFloor) return alert("Please enter your actual floor.");
+  const floor = document.getElementById("floorInput").value.trim();
+  if (!floor) return alert("Please enter the correct floor.");
 
-  const data = window._aglTestData || {};
-  const db = window._guardianFirestore;
-  const { addDoc, collection, serverTimestamp } = window._firestoreHelpers;
-
-  const payload = {
-    latitude: data.lat,
-    longitude: data.lng,
-    deviceAltitude: data.alt,
-    groundElevation: data.elev,
-    agl: data.agl,
-    estimatedFloor: data.floorEstimate,
-    actualFloor: actualFloor,
-    confirmed: false,
-    timestamp: serverTimestamp()
-  };
-
-  await addDoc(collection(db, "aglLogs"), payload);
-
-  const correctionMsg = `📍 AGL Correction Submission:
-
-Latitude: ${data.lat}
-Longitude: ${data.lng}
-Device Altitude: ${data.alt ?? "N/A"} m
-Ground Elevation: ${data.elev ?? "N/A"} m
-AGL: ${data.agl ?? "N/A"} m
-
-Estimated Floor: ${data.floorEstimate}
-❌ User reported actual floor: ${actualFloor}
-
-Map: ${data.googleMapsLink}
-`;
-
-  emailjs.init(EMAILJS_USER_ID);
-  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    to_email: PARENT_EMAIL,
-    message: correctionMsg
-  }).then(() => {
-    window.location.href = "/thanks.html";
-  });
+  await sendLogToFirebase(false, floor);
+  await sendEmail(false, floor);
+  redirectAfterSubmit();
 });
 
-async function getTerrainElevation(lat, lng) {
+async function sendLogToFirebase(confirmed, floor = null) {
   try {
-    const res = await fetch(`/.netlify/functions/getElevation?lat=${lat}&lng=${lng}`);
-    const data = await res.json();
-    if (data.status === "OK" && data.results && data.results.length > 0) {
-      return data.results[0].elevation;
-    }
+    const docRef = await addDoc(collection(db, "aglLogs"), {
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+      altitude: aglData.altitude,
+      ground: aglData.ground,
+      agl: aglData.agl,
+      estimatedFloor: aglData.estimatedFloor,
+      actualFloor: floor,
+      confirmed,
+      timestamp: serverTimestamp()
+    });
+    console.log("📝 Log saved:", docRef.id);
   } catch (err) {
-    console.error("Elevation fetch failed:", err);
+    console.error("❌ Failed to write to Firestore", err);
   }
-  return null;
+}
+
+async function sendEmail(confirmed, correctedFloor = null) {
+  const templateParams = {
+    to_email: "john89ram@gmail.com",
+    subject: "📍 AGL Correction Submission",
+    message: `
+📍 AGL Correction Submission:
+
+Latitude: ${coords.latitude}
+Longitude: ${coords.longitude}
+Device Altitude: ${aglData.altitude}
+Ground Elevation: ${aglData.ground}
+AGL: ${aglData.agl}
+
+Estimated Floor: ${aglData.estimatedFloor}
+${confirmed ? "✅ User confirmed floor estimate." : `❌ User reported actual floor: ${correctedFloor}`}
+`
+  };
+
+  try {
+    const response = await emailjs.send("service_017si3q", "template_j2j5ij8", templateParams);
+    console.log("📨 Email sent!", response.status, response.text);
+  } catch (err) {
+    console.error("❌ Email failed to send:", err);
+    alert("⚠️ Failed to send email: " + (err.text || err));
+  }
+}
+
+function redirectAfterSubmit() {
+  window.location.href = "/thankyou.html";
 }
