@@ -8,26 +8,50 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 2rem;
       background: #f4f4f4;
-    }
-
-    .agl-header {
-      margin-bottom: 1.5rem;
-    }
-
-    .agl-controls {
+      padding: 2rem;
       display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-bottom: 1.5rem;
+      justify-content: center;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin-top: 0;
+      font-size: 1rem;
     }
 
     button {
       padding: 10px 20px;
       font-size: 1rem;
       cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    #status {
+      margin-top: 0.5rem;
+      font-weight: bold;
+    }
+
+    .agl-output {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      text-align: left;
     }
 
     #feedback {
@@ -35,58 +59,56 @@
       display: none;
     }
 
-    label {
-      display: block;
-      margin: 1rem 0 0.5rem;
-    }
-
-    .agl-output {
-      margin-top: 2rem;
-      padding: 1rem;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      max-width: 450px;
-    }
-
     #yesBtn,
     #noBtn {
-      margin-right: 10px;
+      margin: 0.5rem;
+    }
+
+    #correctionForm {
+      margin-top: 1rem;
+    }
+
+    input[type="text"] {
+      padding: 8px;
+      width: 70%;
+      margin-top: 0.5rem;
     }
 
     a {
       text-decoration: none;
-      color: #00a;
+      color: #007bff;
       font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div class="agl-header">
+  <div class="container">
     <h1>GuardianGPS - AGL Testing</h1>
     <p>Click the button to estimate your current floor based on GPS.</p>
-  </div>
 
-  <div class="agl-controls">
     <button id="runTest">Run AGL Test</button>
     <p id="status"></p>
-  </div>
 
-  <div id="output" class="agl-output"></div>
+    <div id="output" class="agl-output"></div>
 
-  <div id="feedback">
-    <h3>Was the floor estimate correct?</h3>
-    <button id="yesBtn">✅ Yes</button>
-    <button id="noBtn" onclick="document.getElementById('correctionForm').style.display = 'block'">❌ No</button>
+    <div id="feedback">
+      <h3>Was the floor estimate correct?</h3>
+      <button id="yesBtn">✅ Yes</button>
+      <button id="noBtn" onclick="document.getElementById('correctionForm').style.display = 'block'">❌ No</button>
 
-    <div id="correctionForm" style="display: none; margin-top: 1rem;">
-      <label for="floorInput">What floor are you on?</label>
-      <input type="text" id="floorInput" placeholder="e.g., Ground, 3rd, 15th" />
-      <button id="sendCorrection">Send Correction</button>
+      <div id="correctionForm" style="display: none;">
+        <label for="floorInput">What floor are you on?</label>
+        <input type="text" id="floorInput" placeholder="e.g., Ground, 3rd, 15th" />
+        <br />
+        <button id="sendCorrection" style="margin-top: 1rem;">Send Correction</button>
+      </div>
     </div>
   </div>
 
-  <!-- ✅ Load main module -->
   <script type="module" src="./agl-test.js"></script>
 </body>
 </html>

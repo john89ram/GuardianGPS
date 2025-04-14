@@ -9,9 +9,9 @@ import {
 
 import { firebaseConfig } from "./config.js";
 
-// ✅ Modern EmailJS module import
+// ✅ EmailJS
 import emailjs from "https://cdn.jsdelivr.net/npm/@emailjs/browser@3.11.0/+esm";
-emailjs.init("XZpDjjUIyCedr-e4n"); // Your EmailJS public key
+emailjs.init("XZpDjjUIyCedr-e4n"); // Your public key
 
 // ✅ Initialize Firebase
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
@@ -27,29 +27,35 @@ document.getElementById("runTest").addEventListener("click", async () => {
     const { latitude, longitude, altitude } = pos.coords;
     coords = { latitude, longitude, altitude };
 
-    // Get elevation via Netlify function
+    // Fetch terrain elevation
     const url = `/.netlify/functions/getElevation?lat=${latitude}&lng=${longitude}`;
     console.log("📡 Fetching elevation:", url);
+
+    let ground = null;
+    let agl = null;
 
     try {
       const res = await fetch(url);
       const data = await res.json();
 
-      const ground = data.results?.[0]?.elevation;
-      const agl = altitude !== null ? (altitude - ground).toFixed(2) : null;
-
-      aglData = {
-        altitude: altitude ?? "Unavailable",
-        ground: ground ?? "Unavailable",
-        agl,
-        estimatedFloor: getFloorFromAGL(agl)
-      };
-
-      renderResults();
+      ground = data.results?.[0]?.elevation ?? null;
+      agl = altitude !== null && ground !== null ? (altitude - ground).toFixed(2) : null;
     } catch (err) {
-      console.error("❌ Failed to get elevation", err);
-      document.getElementById("status").textContent = "Error fetching elevation.";
+      console.warn("⚠️ Failed to fetch elevation — continuing anyway", err);
+      document.getElementById("status").textContent = "⚠️ Elevation unavailable. Estimating from GPS data only.";
     }
+
+    aglData = {
+      altitude: altitude ?? "Unavailable",
+      ground: ground ?? "Unavailable",
+      agl,
+      estimatedFloor: getFloorFromAGL(agl)
+    };
+
+    renderResults();
+  }, (error) => {
+    console.error("❌ Geolocation error:", error);
+    document.getElementById("status").textContent = "Failed to get device location.";
   });
 });
 
