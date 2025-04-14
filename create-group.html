@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create or Join a Group | GuardianGPS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8fbff;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #003366;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo img {
+      width: 32px;
+      height: 32px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-top: 1rem;
+      color: #003366;
+    }
+
+    p.subtitle {
+      color: #555;
+      font-size: 1rem;
+      max-width: 400px;
+      margin-bottom: 2rem;
+    }
+
+    .btn-primary {
+      background-color: #1f78d1;
+      color: white;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 15px;
+      margin-bottom: 2rem;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      background-color: #155fa0;
+    }
+
+    .themes {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
+      gap: 1rem;
+      max-width: 400px;
+      width: 100%;
+      margin: 0 auto 2rem;
+    }
+
+    .theme {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .theme img {
+      height: 48px;
+      margin-bottom: 0.5rem;
+    }
+
+    .theme-title {
+      font-weight: bold;
+      margin-bottom: 0.25rem;
+    }
+
+    .theme-sub {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .join-group {
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .join-group h2 {
+      margin-top: 0;
+      color: #003366;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 1rem;
+    }
+
+    .btn-secondary {
+      background-color: #444;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background-color: #222;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="../assets/favicon.png" alt="GPS Icon" />
+    <span>GuardianGPS</span>
+  </div>
+
+  <h1>Create or join a group</h1>
+  <p class="subtitle">
+    Use groups to track friends, family, or colleagues. <br />
+    Name your own pack and choose a theme that fits your group.
+  </p>
+
+  <button class="btn-primary">Create Group</button>
+
+  <div class="themes">
+    <div class="theme">
+      <img src="../assets/wolf.png" alt="The Pack" />
+      <div class="theme-title">The Pack</div>
+      <div class="theme-sub">Animal</div>
+    </div>
+    <div class="theme">
+      <img src="../assets/warrior.png" alt="The Guild" />
+      <div class="theme-title">The Guild</div>
+      <div class="theme-sub">Fantasy</div>
+    </div>
+    <div class="theme">
+      <img src="../assets/suit.png" alt="The Syndicate" />
+      <div class="theme-title">The Syndicate</div>
+      <div class="theme-sub">Others</div>
+    </div>
+    <div class="theme">
+      <img src="../assets/home.png" alt="Smith Family" />
+      <div class="theme-title">Smith Family</div>
+      <div class="theme-sub">Custom</div>
+    </div>
+  </div>
+
+  <div class="join-group">
+    <h2>Join Existing Group</h2>
+    <input type="text" placeholder="Group Code" />
+    <button class="btn-secondary">Join Group</button>
+  </div>
+</body>
+</html>
