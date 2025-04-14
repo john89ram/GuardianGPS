@@ -9,7 +9,11 @@ import {
 
 import { firebaseConfig } from "./config.js";
 
-// Safe Firebase init
+// ✅ Modern EmailJS module import
+import emailjs from "https://cdn.jsdelivr.net/npm/@emailjs/browser@3.11.0/+esm";
+emailjs.init("XZpDjjUIyCedr-e4n"); // Your EmailJS public key
+
+// ✅ Initialize Firebase
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
